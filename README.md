@@ -15,7 +15,7 @@ This repository uses the **Drupal Recommended Project** pattern with:
 
 - Safe to publish publicly (no private references, no secrets, no proprietary modules/submodules)
 - Secure-by-default deployment posture
-- Reproducible build flow with dependency lock + containerized build
+- Reproducible build flow with dependency lock + containerized build (commit `composer.lock` after initial dependency resolution)
 - Scalable cloud-native architecture for multi-pod Drupal workloads
 
 ## Repository Layout
