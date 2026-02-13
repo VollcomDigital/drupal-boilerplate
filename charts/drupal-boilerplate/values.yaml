@@ -1,0 +1,140 @@
+replicaCount: 2
+
+image:
+  php:
+    repository: ghcr.io/your-org/drupal-boilerplate-php
+    tag: latest
+    pullPolicy: IfNotPresent
+  cli:
+    repository: ghcr.io/your-org/drupal-boilerplate-cli
+    tag: latest
+    pullPolicy: IfNotPresent
+  nginx:
+    repository: nginx
+    tag: "1.27-alpine"
+    pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  fsGroup: 10001
+  seccompProfile:
+    type: RuntimeDefault
+
+containerSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations: {}
+  hosts:
+    - host: drupal.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 70
+
+pdb:
+  enabled: true
+  minAvailable: 1
+
+resources:
+  php:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 768Mi
+  nginx:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+
+env:
+  appEnv: production
+  drupalEnv: production
+  trustedHostPatterns: ^drupal\\.example\\.com$
+  reverseProxy: true
+  reverseProxyAddresses: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+  disablePoormansCron: true
+  configSyncDirectory: /var/www/html/config/sync
+  privateFilesPath: /var/www/html/private
+  filesDriver: s3
+  dbDriver: mysql
+  dbHost: mariadb.default.svc.cluster.local
+  dbPort: "3306"
+  dbName: drupal
+  dbUser: drupal
+  redisHost: redis.default.svc.cluster.local
+  redisPort: "6379"
+  redisPrefix: drupal
+  s3:
+    bucket: ""
+    region: us-east-1
+    endpoint: ""
+    publicBaseUrl: ""
+    usePathStyleEndpoint: true
+
+secrets:
+  existingSecret: ""
+  hashSalt: change-me-before-production
+  dbPassword: change-me-before-production
+  redisPassword: ""
+  s3AccessKeyId: ""
+  s3SecretAccessKey: ""
+
+persistence:
+  enabled: false
+  existingClaim: ""
+  storageClassName: ""
+  accessMode: ReadWriteMany
+  size: 10Gi
+  mountPath: /var/www/html/web/sites/default/files
+
+tmp:
+  sizeLimit: 256Mi
+
+cron:
+  enabled: true
+  schedule: "*/15 * * * *"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 120
+  drushCommand: cron --yes
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

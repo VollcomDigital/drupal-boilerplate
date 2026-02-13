@@ -1,0 +1,67 @@
+{{- if .Values.cron.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "drupal-boilerplate.fullname" . }}-cron
+  labels:
+    {{- include "drupal-boilerplate.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.cron.schedule | quote }}
+  concurrencyPolicy: {{ .Values.cron.concurrencyPolicy }}
+  successfulJobsHistoryLimit: {{ .Values.cron.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cron.failedJobsHistoryLimit }}
+  startingDeadlineSeconds: {{ .Values.cron.startingDeadlineSeconds }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            {{- include "drupal-boilerplate.selectorLabels" . | nindent 12 }}
+        spec:
+          serviceAccountName: {{ include "drupal-boilerplate.serviceAccountName" . }}
+          restartPolicy: OnFailure
+          securityContext:
+            {{- toYaml .Values.podSecurityContext | nindent 12 }}
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          containers:
+            - name: drush-cron
+              image: "{{ .Values.image.cli.repository }}:{{ .Values.image.cli.tag }}"
+              imagePullPolicy: {{ .Values.image.cli.pullPolicy }}
+              workingDir: /var/www/html
+              command:
+                - /bin/sh
+                - -lc
+              args:
+                - vendor/bin/drush {{ .Values.cron.drushCommand }} --root=/var/www/html/web
+              envFrom:
+                - configMapRef:
+                    name: {{ include "drupal-boilerplate.fullname" . }}-config
+                - secretRef:
+                    name: {{ include "drupal-boilerplate.secretName" . }}
+              securityContext:
+                {{- toYaml .Values.containerSecurityContext | nindent 16 }}
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
+                - name: private
+                  mountPath: /var/www/html/private
+                - name: files
+                  mountPath: {{ .Values.persistence.mountPath }}
+          volumes:
+            - name: tmp
+              emptyDir:
+                sizeLimit: {{ .Values.tmp.sizeLimit }}
+            - name: private
+              emptyDir:
+                sizeLimit: {{ .Values.tmp.sizeLimit }}
+            - name: files
+              {{- if and (eq .Values.env.filesDriver "pvc") .Values.persistence.enabled }}
+              persistentVolumeClaim:
+                claimName: {{ default (printf "%s-files" (include "drupal-boilerplate.fullname" .)) .Values.persistence.existingClaim }}
+              {{- else }}
+              emptyDir: {}
+              {{- end }}
+{{- end }}

@@ -1,0 +1,7 @@
+boilerplate_example.health:
+  path: "/healthz"
+  defaults:
+    _controller: '\Drupal\boilerplate_example\Controller\HealthController::health'
+    _title: "Health"
+  requirements:
+    _access: "TRUE"

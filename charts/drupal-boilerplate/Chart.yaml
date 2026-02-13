@@ -1,0 +1,16 @@
+apiVersion: v2
+name: drupal-boilerplate
+description: Cloud-native Drupal Helm chart with secure defaults.
+type: application
+version: 0.1.0
+appVersion: "11"
+home: https://github.com/your-org/drupal-cloud-native-boilerplate
+sources:
+  - https://github.com/your-org/drupal-cloud-native-boilerplate
+keywords:
+  - drupal
+  - kubernetes
+  - helm
+  - php-fpm
+maintainers:
+  - name: Drupal Boilerplate Maintainers

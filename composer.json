@@ -1,0 +1,96 @@
+{
+  "name": "drupal-cloud-native/boilerplate",
+  "description": "Cloud-native Drupal boilerplate with Docker, Helm, and secure defaults.",
+  "type": "project",
+  "license": "MIT",
+  "homepage": "https://github.com/your-org/drupal-cloud-native-boilerplate",
+  "support": {
+    "issues": "https://github.com/your-org/drupal-cloud-native-boilerplate/issues",
+    "source": "https://github.com/your-org/drupal-cloud-native-boilerplate"
+  },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://packages.drupal.org/8"
+    }
+  ],
+  "require": {
+    "php": "^8.3",
+    "composer/installers": "^2.3",
+    "drupal/core-composer-scaffold": "^11",
+    "drupal/core-project-message": "^11",
+    "drupal/core-recommended": "^11",
+    "drupal/flysystem": "^3.0",
+    "drupal/flysystem_s3": "^3.0",
+    "drupal/redis": "^1.8",
+    "vlucas/phpdotenv": "^5.6"
+  },
+  "require-dev": {
+    "drupal/core-dev": "^11",
+    "drush/drush": "^13.6"
+  },
+  "conflict": {
+    "drupal/drupal": "*"
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true,
+  "config": {
+    "allow-plugins": {
+      "composer/installers": true,
+      "drupal/core-composer-scaffold": true,
+      "drupal/core-project-message": true,
+      "phpstan/extension-installer": true
+    },
+    "sort-packages": true
+  },
+  "extra": {
+    "drupal-scaffold": {
+      "locations": {
+        "web-root": "web/"
+      },
+      "file-mapping": {
+        "[web-root]/sites/default/settings.php": false,
+        "[web-root]/sites/default/services.yml": false
+      }
+    },
+    "installer-paths": {
+      "web/core": [
+        "type:drupal-core"
+      ],
+      "web/libraries/{$name}": [
+        "type:drupal-library"
+      ],
+      "web/modules/contrib/{$name}": [
+        "type:drupal-module"
+      ],
+      "web/profiles/contrib/{$name}": [
+        "type:drupal-profile"
+      ],
+      "web/themes/contrib/{$name}": [
+        "type:drupal-theme"
+      ],
+      "drush/Commands/contrib/{$name}": [
+        "type:drupal-drush"
+      ],
+      "web/modules/custom/{$name}": [
+        "type:drupal-custom-module"
+      ],
+      "web/profiles/custom/{$name}": [
+        "type:drupal-custom-profile"
+      ],
+      "web/themes/custom/{$name}": [
+        "type:drupal-custom-theme"
+      ]
+    },
+    "drupal-core-project-message": {
+      "include-keys": [
+        "homepage",
+        "support"
+      ],
+      "post-create-project-cmd-message": [
+        "Cloud-native Drupal boilerplate initialized.",
+        "Review README.md for local development and Kubernetes deployment."
+      ]
+    }
+  }
+}

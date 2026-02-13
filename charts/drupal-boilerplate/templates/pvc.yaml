@@ -1,0 +1,17 @@
+{{- if and (eq .Values.env.filesDriver "pvc") .Values.persistence.enabled (not .Values.persistence.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "drupal-boilerplate.fullname" . }}-files
+  labels:
+    {{- include "drupal-boilerplate.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.persistence.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.size | quote }}
+  {{- if .Values.persistence.storageClassName }}
+  storageClassName: {{ .Values.persistence.storageClassName | quote }}
+  {{- end }}
+{{- end }}
