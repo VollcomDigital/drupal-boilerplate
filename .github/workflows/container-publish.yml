@@ -65,7 +65,7 @@ jobs:
           sbom: true
 
       - name: Trivy image scan
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@0.34.0
         with:
           image-ref: ${{ env.REGISTRY }}/${{ env.OWNER_LC }}/${{ matrix.image }}:sha-${{ github.sha }}
           format: table
