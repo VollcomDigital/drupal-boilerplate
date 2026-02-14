@@ -73,7 +73,7 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_general_ci
     healthcheck:
-      test: ["CMD-SHELL", "mariadb-admin ping -h localhost -u${DB_USER:-drupal} -p${DB_PASSWORD:-drupal} || exit 1"]
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 10s
       timeout: 5s
       retries: 10

@@ -114,7 +114,9 @@ if (extension_loaded('apcu')) {
 }
 
 $redis_host = $env('REDIS_HOST');
-if ($redis_host !== NULL && extension_loaded('redis')) {
+$redis_service_yaml = $app_root . '/modules/contrib/redis/example.services.yml';
+if ($redis_host !== NULL && extension_loaded('redis') && is_readable($redis_service_yaml)) {
+  $settings['container_yamls'][] = $redis_service_yaml;
   $settings['cache']['default'] = 'cache.backend.redis';
   $settings['cache']['bins']['render'] = 'cache.backend.redis';
   $settings['cache']['bins']['dynamic_page_cache'] = 'cache.backend.redis';

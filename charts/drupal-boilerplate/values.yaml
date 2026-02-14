@@ -3,11 +3,13 @@ replicaCount: 2
 image:
   php:
     repository: ghcr.io/your-org/drupal-boilerplate-php
-    tag: latest
+    # Avoid mutable tags in production; prefer immutable sha-* tags from CI.
+    tag: main
     pullPolicy: IfNotPresent
   cli:
     repository: ghcr.io/your-org/drupal-boilerplate-cli
-    tag: latest
+    # Avoid mutable tags in production; prefer immutable sha-* tags from CI.
+    tag: main
     pullPolicy: IfNotPresent
   nginx:
     repository: nginx

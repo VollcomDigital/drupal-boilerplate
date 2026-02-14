@@ -130,6 +130,8 @@ helm upgrade --install drupal charts/drupal-boilerplate \
 ```bash
 helm upgrade --install drupal charts/drupal-boilerplate \
   --namespace drupal \
+  --set image.php.tag='sha-<git-sha>' \
+  --set image.cli.tag='sha-<git-sha>' \
   --set secrets.hashSalt='replace-with-secure-random' \
   --set secrets.dbPassword='replace-with-db-password'
 ```
