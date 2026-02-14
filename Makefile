@@ -2,8 +2,9 @@ SHELL := /bin/bash
 DC ?= docker compose
 CLI_SERVICE ?= cli
 DC_CLI ?= $(DC) --profile cli
+DRUPAL_INSTALL_ACCOUNT_NAME ?= admin
 
-.PHONY: help env up up-devtools up-observability up-tls down restart logs ps shell composer composer-install drush install cron
+.PHONY: help env up up-devtools up-observability up-tls down restart logs ps shell composer composer-install drush check-install-credentials install cron
 
 help:
 	@echo "Targets:"
@@ -15,7 +16,7 @@ help:
 	@echo "  make shell              # Open shell in CLI container"
 	@echo "  make composer ARGS='...'# Run composer in CLI container"
 	@echo "  make drush ARGS='...'   # Run drush command in CLI container"
-	@echo "  make install            # Install Drupal (standard profile)"
+	@echo "  make install            # Install Drupal (requires DRUPAL_INSTALL_ACCOUNT_PASS)"
 	@echo "  make cron               # Run drush cron once"
 	@echo "  make down               # Stop and remove containers"
 
@@ -58,9 +59,16 @@ composer-install: env
 drush: env
 	$(DC_CLI) run --rm $(CLI_SERVICE) vendor/bin/drush $(ARGS)
 
-install: env
+check-install-credentials:
+	@if [ -z "$(DRUPAL_INSTALL_ACCOUNT_PASS)" ]; then \
+	  echo "Set DRUPAL_INSTALL_ACCOUNT_PASS for local install."; \
+	  echo "Example: make install DRUPAL_INSTALL_ACCOUNT_PASS='change-me-local'"; \
+	  exit 1; \
+	fi
+
+install: env check-install-credentials
 	$(DC_CLI) run --rm $(CLI_SERVICE) vendor/bin/drush site:install standard --yes \
-	  --account-name=admin --account-pass=admin \
+	  --account-name=$(DRUPAL_INSTALL_ACCOUNT_NAME) --account-pass=$(DRUPAL_INSTALL_ACCOUNT_PASS) \
 	  --db-url=$${DB_DRIVER:-mysql}://$${DB_USER:-drupal}:$${DB_PASSWORD:-drupal}@$${DB_HOST:-db}:$${DB_PORT:-3306}/$${DB_NAME:-drupal}
 
 cron: env

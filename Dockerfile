@@ -59,24 +59,28 @@ CMD ["sh"]
 FROM php-base AS build-runtime
 
 COPY composer.json composer.lock* ./
-COPY . .
-
-RUN composer install \
+RUN --mount=type=cache,target=/tmp/composer/cache \
+    composer install \
       --no-dev \
       --no-interaction \
       --prefer-dist \
       --optimize-autoloader \
       --classmap-authoritative
+COPY config ./config
+COPY drush ./drush
+COPY web ./web
 
 FROM php-base AS build-cli
 
 COPY composer.json composer.lock* ./
-COPY . .
-
-RUN composer install \
+RUN --mount=type=cache,target=/tmp/composer/cache \
+    composer install \
       --no-interaction \
       --prefer-dist \
       --optimize-autoloader
+COPY config ./config
+COPY drush ./drush
+COPY web ./web
 
 FROM dev-runtime AS runtime
 

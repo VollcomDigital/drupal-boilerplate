@@ -67,7 +67,7 @@ make up-tls             # Traefik TLS routing for drupal.localhost
 
 ```bash
 make composer-install
-make install
+make install DRUPAL_INSTALL_ACCOUNT_PASS='change-me-local'
 ```
 
 Useful commands:
