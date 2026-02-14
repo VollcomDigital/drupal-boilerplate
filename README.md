@@ -188,7 +188,23 @@ GitHub Actions include:
 - Dependency review (PR)
 - Trivy filesystem/config/container scanning
 - Gitleaks secret scanning
+- SonarCloud static analysis (optional, gated by repository configuration)
 - Branch-based container tags (e.g. `main`, feature branch names, and `sha-*`)
+
+### SonarCloud setup (optional)
+
+The repository includes `.github/workflows/sonarcloud.yml` and `sonar-project.properties`.
+
+To enable scanning:
+
+1. Create a SonarCloud project.
+2. Add GitHub repository variables:
+   - `SONAR_ORGANIZATION`
+   - `SONAR_PROJECT_KEY`
+3. Add GitHub repository secret:
+   - `SONAR_TOKEN`
+
+The SonarCloud workflow runs on push and pull requests, and is skipped automatically when these settings are not configured.
 
 ## Security and Disclosure
 
