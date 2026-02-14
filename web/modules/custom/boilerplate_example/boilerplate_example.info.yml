@@ -1,0 +1,5 @@
+name: Boilerplate Example
+type: module
+description: "Sample custom module scaffold for cloud-native Drupal projects."
+core_version_requirement: ^11
+package: Custom

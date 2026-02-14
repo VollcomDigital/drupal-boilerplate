@@ -1,0 +1,7 @@
+name: Boilerplate Theme
+type: theme
+description: "Sample custom theme scaffold for project-specific branding."
+base theme: stable9
+core_version_requirement: ^11
+libraries:
+  - boilerplate_theme/global-styling

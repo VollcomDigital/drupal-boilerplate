@@ -1,0 +1,10 @@
+.git
+.github
+node_modules
+vendor
+.env
+.env.*
+var
+tests
+README.md
+SECURITY.md

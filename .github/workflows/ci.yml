@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          tools: composer:v2
+          extensions: apcu, gd, intl, pdo_mysql, pdo_pgsql, redis, zip
+          coverage: none
+
+      - name: Validate composer metadata
+        run: composer validate --strict --no-check-lock
+
+      - name: PHP syntax check
+        run: |
+          php -l web/sites/default/settings.php
+          php -l web/modules/custom/boilerplate_example/src/Controller/HealthController.php
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+
+      - name: Helm lint
+        run: helm lint charts/drupal-boilerplate
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: YAML lint
+        run: |
+          pip install --disable-pip-version-check yamllint
+          yamllint -d "{extends: default, rules: {line-length: {max: 180}}}" \
+            .github docker-compose.yml charts/drupal-boilerplate/values.yaml charts/drupal-boilerplate/Chart.yaml
+
+  build-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build runtime image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          target: runtime
+          push: false
+          tags: local/drupal-boilerplate-runtime:${{ github.sha }}
+
+      - name: Build CLI image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          target: cli-runtime
+          push: false
+          tags: local/drupal-boilerplate-cli:${{ github.sha }}

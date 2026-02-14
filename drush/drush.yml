@@ -1,0 +1,3 @@
+options:
+  uri: "${DRUPAL_SITE_URI:-http://localhost:8080}"
+  root: /var/www/html/web
